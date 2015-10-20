@@ -1,6 +1,7 @@
 package symlink
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 )
@@ -43,5 +44,7 @@ func TestDestination(t *testing.T) {
 			t.Errorf("SL '%v', expected <nil>", sl)
 		}
 	}
-	New(".")
+	_, err = New(`..\..\deps\src\github.com\VonC\ggb`)
+	_, err = New(`.`)
+	fmt.Printf("%+v\n", err)
 }
