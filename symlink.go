@@ -1,7 +1,6 @@
 package symlink
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -17,8 +16,7 @@ func New(dst string) (*SL, error) {
 	if dst, err = dirAbsPath(dst); err != nil {
 		return nil, err
 	}
-	fi, err := os.Stat(dst)
-	fmt.Printf("%+v %s\n", fi, dst)
+	_, _, err = dirExists(dst)
 	if err != nil {
 		return nil, err
 	}
@@ -45,5 +43,16 @@ func dirExists(path string) (bool, string, error) {
 	if fi == nil {
 		return false, "", err
 	}
+	// sys := fi.Sys().(*syscall.Win32FileAttributeData)
+	if err == nil {
+		return true, "", nil
+	}
+	if strings.HasPrefix(err.Error(), "readlink ") == false {
+		return false, "", err
+	}
+	// This is a symlink (JUNCTION on Windows)
+	dir := filepath.Dir(path)
+	dir = filepath.Dir(dir)
+	// fmt.Printf("%s\n", dir)
 	return false, "", nil
 }
