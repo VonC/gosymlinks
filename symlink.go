@@ -1,8 +1,12 @@
 package symlink
 
 import (
+	"bytes"
+	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -52,7 +56,34 @@ func dirExists(path string) (bool, string, error) {
 	}
 	// This is a symlink (JUNCTION on Windows)
 	dir := filepath.Dir(path)
+	base := filepath.Base(dir)
 	dir = filepath.Dir(dir)
-	// fmt.Printf("%s\n", dir)
-	return false, "", nil
+	sdir := ""
+	if sdir, err = execcmd("dir", ".", dir); err != nil {
+		return false, "", err
+	}
+	r := regexp.MustCompile(fmt.Sprintf(`(?m)<J[UO]NCTION>\s+%s\s+\[([^\]]+)\]\s*$`, base))
+	n := r.FindAllStringSubmatch(sdir, -1)
+	if len(n) == 1 {
+		return true, n[0][1], nil
+	}
+	return false, "", fmt.Errorf("Unable to list content of symlink parent dir '%s' for '%s'", dir, base)
+}
+
+func execcmd(exe, cmd string, dir string) (string, error) {
+	args := strings.Split(cmd, " ")
+	args = append([]string{"/c", exe}, args...)
+	c := exec.Command("cmd", args...)
+	c.Dir = dir
+	var bout bytes.Buffer
+	c.Stdout = &bout
+	var berr bytes.Buffer
+	c.Stderr = &berr
+	err := c.Run()
+	if err != nil {
+		return bout.String(), fmt.Errorf("Unable to run '%s %s' in '%s': err '%s'\n'%s'", exe, cmd, dir, err.Error(), berr.String())
+	} else if berr.String() != "" {
+		return bout.String(), fmt.Errorf("Warning on run '%s %s' in '%s': '%s'", exe, cmd, dir, berr.String())
+	}
+	return bout.String(), nil
 }
