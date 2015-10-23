@@ -15,14 +15,17 @@ type SL struct {
 	path string
 }
 
-func New(dst string) (*SL, error) {
+func New(link, dst string) (*SL, error) {
 	var err error
 	if dst, err = dirAbsPath(dst); err != nil {
 		return nil, err
 	}
-	_, _, err = dirExists(dst)
+	exist, _, err := dirExists(dst)
 	if err != nil {
 		return nil, err
+	}
+	if !exist {
+		return nil, fmt.Errorf("Unknown destination '%s'", dst)
 	}
 	return nil, nil
 }
