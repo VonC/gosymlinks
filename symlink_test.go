@@ -1,7 +1,6 @@
 package symlink
 
 import (
-	"fmt"
 	"strings"
 	"testing"
 )
@@ -36,7 +35,7 @@ func TestDestination(t *testing.T) {
 	var sl *SL
 	var err error
 	for _, test := range tests {
-		sl, err = New(test.dst)
+		sl, err = New(".", test.dst)
 		if err == nil || strings.Contains(err.Error(), test.err) == false {
 			t.Errorf("Err '%v', expected '%s'", err, test.err)
 		}
@@ -44,7 +43,7 @@ func TestDestination(t *testing.T) {
 			t.Errorf("SL '%v', expected <nil>", sl)
 		}
 	}
-	_, err = New(`..\..\deps\src\github.com\VonC\ggb`)
-	_, err = New(`.`)
-	fmt.Printf("%+v\n", err)
+	_, err = New(`.`, `..\..\deps\src\github.com\VonC\ggb`)
+	_, err = New(`.`, `..`)
+	//fmt.Printf("%+v\n", err)
 }
