@@ -21,11 +21,12 @@ func New(link, dst string) (*SL, error) {
 		return nil, err
 	}
 	exist, _, err := dirExists(dst)
+	msgerr := ""
 	if err != nil {
-		return nil, err
+		msgerr = fmt.Sprintf("\rError: '%+v'", err)
 	}
 	if !exist {
-		return nil, fmt.Errorf("Unknown destination '%s'", dst)
+		return nil, fmt.Errorf("Unknown destination '%s'%s", dst, msgerr)
 	}
 	return nil, nil
 }
