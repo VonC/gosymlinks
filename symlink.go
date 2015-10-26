@@ -46,8 +46,10 @@ func dirAbsPath(path string) (string, error) {
 	return path, nil
 }
 
+var osStat = os.Stat
+
 func dirExists(path string) (bool, string, error) {
-	fi, err := os.Stat(path)
+	fi, err := osStat(path)
 	if fi == nil {
 		return false, "", err
 	}

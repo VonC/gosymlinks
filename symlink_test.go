@@ -1,6 +1,8 @@
 package symlink
 
 import (
+	"fmt"
+	"os"
 	"strings"
 	"testing"
 )
@@ -28,9 +30,11 @@ func TestDestination(t *testing.T) {
 	// from abs (https://github.com/golang/go/blob/d16c7f8004bd1c9f896367af7ea86f5530596b39/src/path/filepath/path_windows.go#L109)
 	// from Abs (https://github.com/golang/go/blob/d16c7f8004bd1c9f896367af7ea86f5530596b39/src/path/filepath/path.go#L235)
 
+	osStat = testOsStat
 	tests := []*test{
 		&test{dst: "unknown/dst", err: "The system cannot find the path specified"},
 		&test{dst: string([]byte{0}), err: "invalid argument"},
+		&test{dst: "err", err: "Test error on os.Stat with non-nil fi"},
 	}
 	var sl *SL
 	var err error
@@ -45,5 +49,13 @@ func TestDestination(t *testing.T) {
 	}
 	_, err = New(`.`, `..\..\deps\src\github.com\VonC\ggb`)
 	_, err = New(`.`, `..`)
-	//fmt.Printf("%+v\n", err)
+	// fmt.Printf("%+v\n", err)
+}
+
+func testOsStat(name string) (os.FileInfo, error) {
+	if strings.HasSuffix(name, `prj\symlink\err\`) {
+		fi, _ := os.Stat(".")
+		return fi, fmt.Errorf("Test error on os.Stat with non-nil fi")
+	}
+	return os.Stat(name)
 }
