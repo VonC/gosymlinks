@@ -76,6 +76,12 @@ func dirExists(path string) (bool, string, error) {
 	return false, "", fmt.Errorf("Unable to list content of symlink parent dir '%s' for '%s'", dir, base)
 }
 
+func cmdRun(cmd *exec.Cmd) error {
+	return cmd.Run()
+}
+
+var execRun = cmdRun
+
 func execcmd(exe, cmd string, dir string) (string, error) {
 	args := strings.Split(cmd, " ")
 	args = append([]string{"/c", exe}, args...)
@@ -85,7 +91,7 @@ func execcmd(exe, cmd string, dir string) (string, error) {
 	c.Stdout = &bout
 	var berr bytes.Buffer
 	c.Stderr = &berr
-	err := c.Run()
+	err := execRun(c)
 	if err != nil {
 		return bout.String(), fmt.Errorf("Unable to run '%s %s' in '%s': err '%s'\n'%s'", exe, cmd, dir, err.Error(), berr.String())
 	} else if berr.String() != "" {
