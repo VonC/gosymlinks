@@ -3,6 +3,7 @@ package symlink
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 	"testing"
 )
@@ -31,6 +32,7 @@ func TestDestination(t *testing.T) {
 	// from Abs (https://github.com/golang/go/blob/d16c7f8004bd1c9f896367af7ea86f5530596b39/src/path/filepath/path.go#L235)
 
 	osStat = testOsStat
+	execRun = testExecRun
 	tests := []*test{
 		&test{dst: "unknown/dst", err: "The system cannot find the path specified"},
 		&test{dst: string([]byte{0}), err: "invalid argument"},
@@ -47,9 +49,8 @@ func TestDestination(t *testing.T) {
 			t.Errorf("SL '%v', expected <nil>", sl)
 		}
 	}
-	_, err = New(`.`, `..\..\deps\src\github.com\VonC\ggb`)
-	_, err = New(`.`, `..`)
-	// fmt.Printf("%+v\n", err)
+	_, err = New(`.`, `symlink`)
+	fmt.Printf("%+v\n", err)
 }
 
 func testOsStat(name string) (os.FileInfo, error) {
@@ -57,5 +58,14 @@ func testOsStat(name string) (os.FileInfo, error) {
 		fi, _ := os.Stat(".")
 		return fi, fmt.Errorf("Test error on os.Stat with non-nil fi")
 	}
+	if strings.HasSuffix(name, `prj\symlink\symlink\`) {
+		fi, _ := os.Stat(".")
+		return fi, fmt.Errorf("readlink for symlink")
+	}
 	return os.Stat(name)
+}
+
+func testExecRun(cmd *exec.Cmd) error {
+	fmt.Printf("cmd='%+v'\n", cmd)
+	return cmd.Run()
 }
