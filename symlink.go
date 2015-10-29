@@ -70,6 +70,7 @@ func dirExists(path string) (bool, string, error) {
 	}
 	r := regexp.MustCompile(fmt.Sprintf(`(?m)<J[UO]NCTION>\s+%s\s+\[([^\]]+)\]\s*$`, base))
 	n := r.FindAllStringSubmatch(sdir, -1)
+	// fmt.Printf("n='%+v'\nr='%+v'\n", n, r)
 	if len(n) == 1 {
 		return true, n[0][1], nil
 	}

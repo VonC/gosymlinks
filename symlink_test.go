@@ -2,6 +2,7 @@ package symlink
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"strings"
@@ -66,6 +67,18 @@ func testOsStat(name string) (os.FileInfo, error) {
 }
 
 func testExecRun(cmd *exec.Cmd) error {
-	fmt.Printf("cmd='%+v'\n", cmd)
-	return cmd.Run()
+	fmt.Printf("cmd='%+v'\n", cmd.Dir)
+	if strings.HasSuffix(cmd.Dir, `\symlink`) {
+		out := `
+ Répertoire de C:\Users\VonC\prog\git\ggb\deps\src\github.com\VonC
+
+22/06/2015  11:03    <REP>          .
+22/06/2015  11:03    <REP>          ..
+22/06/2015  11:03    <JONCTION>     symlink [C:\Users\VonC\prog\git\ggb\]`
+		io.WriteString(cmd.Stdout, out)
+		// fmt.Printf("i='%d', e='%+v'\n", i, e)
+		return nil
+	} else {
+		return cmd.Run()
+	}
 }
