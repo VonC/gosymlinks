@@ -38,6 +38,7 @@ func TestDestination(t *testing.T) {
 		&test{dst: "unknown/dst", err: "The system cannot find the path specified"},
 		&test{dst: string([]byte{0}), err: "invalid argument"},
 		&test{dst: "err", err: "Test error on os.Stat with non-nil fi"},
+		&test{dst: "badsymlink/dir", err: "unreadable dir on symlink"},
 	}
 	var sl *SL
 	var err error
@@ -50,8 +51,11 @@ func TestDestination(t *testing.T) {
 			t.Errorf("SL '%v', expected <nil>", sl)
 		}
 	}
+	// destination is a symlink
 	_, err = New(`.`, `symlink`)
-	fmt.Printf("%+v\n", err)
+	// destination exists
+	_, err = New(`x`, `.`)
+	// fmt.Printf("%+v\n", err)
 }
 
 func testOsStat(name string) (os.FileInfo, error) {
@@ -63,11 +67,18 @@ func testOsStat(name string) (os.FileInfo, error) {
 		fi, _ := os.Stat(".")
 		return fi, fmt.Errorf("readlink for symlink")
 	}
+	if strings.HasSuffix(name, `prj\symlink\badsymlink\dir\`) {
+		fi, _ := os.Stat(".")
+		return fi, fmt.Errorf("readlink for bad symlink")
+	}
 	return os.Stat(name)
 }
 
 func testExecRun(cmd *exec.Cmd) error {
-	fmt.Printf("cmd='%+v'\n", cmd.Dir)
+	// fmt.Printf("cmd='%+v'\n", cmd.Dir)
+	if strings.HasSuffix(cmd.Dir, `\badsymlink`) {
+		return fmt.Errorf("unreadable dir on symlink")
+	}
 	if strings.HasSuffix(cmd.Dir, `\symlink`) {
 		out := `
  Répertoire de C:\Users\VonC\prog\git\ggb\deps\src\github.com\VonC
