@@ -74,7 +74,7 @@ func dirExists(path string) (bool, string, error) {
 	if len(n) == 1 {
 		return true, n[0][1], nil
 	}
-	return false, "", fmt.Errorf("Unable to list content of symlink parent dir '%s' for '%s'", dir, base)
+	return false, "", fmt.Errorf("Unable to find junction symlink in parent dir '%s' for '%s'", dir, base)
 }
 
 func cmdRun(cmd *exec.Cmd) error {
