@@ -40,6 +40,7 @@ func TestDestination(t *testing.T) {
 		&test{dst: "err", err: "Test error on os.Stat with non-nil fi"},
 		&test{dst: "badsymlink/dir", err: "unreadable dir on symlink"},
 		&test{dst: "nojunction/dir", err: "Unable to find junction symlink in parent dir"},
+		&test{dst: "cmdRun/dir", err: "The system cannot find the file specified"},
 	}
 	var sl *SL
 	var err error
@@ -76,6 +77,10 @@ func testOsStat(name string) (os.FileInfo, error) {
 		fi, _ := os.Stat(".")
 		return fi, fmt.Errorf("readlink for no junction")
 	}
+	if strings.HasSuffix(name, `prj\symlink\cmdRun\dir\`) {
+		fi, _ := os.Stat(".")
+		return fi, fmt.Errorf("readlink for no junction")
+	}
 	return os.Stat(name)
 }
 
@@ -99,6 +104,6 @@ func testExecRun(cmd *exec.Cmd) error {
 		// fmt.Printf("i='%d', e='%+v'\n", i, e)
 		return nil
 	} else {
-		return cmd.Run()
+		return cmdRun(cmd)
 	}
 }
