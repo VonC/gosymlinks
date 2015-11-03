@@ -18,6 +18,7 @@ import (
 //   - is a folder x, rename it to x.1 (if x.1 exists, x.2, ...)
 
 type test struct {
+	src string
 	dst string
 	err string
 	sl  *SL
@@ -59,6 +60,25 @@ func TestDestination(t *testing.T) {
 	// destination exists
 	_, err = New(`x`, `.`)
 	// fmt.Printf("%+v\n", err)
+}
+
+func TestSource(t *testing.T) {
+	osStat = testOsStat
+	execRun = testExecRun
+	tests := []*test{
+		&test{src: "parentNotYetCreated/newlink", err: "The system cannot find the path specified"},
+	}
+	var sl *SL
+	var err error
+	for _, test := range tests {
+		sl, err = New(test.src, ".")
+		if err == nil || strings.Contains(err.Error(), test.err) == false {
+			t.Errorf("Err '%v', expected '%s'", err, test.err)
+		}
+		if sl == nil {
+			t.Errorf("SL '%v', expected NOT <nil>", sl)
+		}
+	}
 }
 
 func testOsStat(name string) (os.FileInfo, error) {
