@@ -15,6 +15,8 @@ type SL struct {
 	path string
 }
 
+var osMkdirAll = os.MkdirAll
+
 func New(link, dst string) (*SL, error) {
 	var err error
 	if dst, err = dirAbsPath(dst); err != nil {
@@ -28,6 +30,32 @@ func New(link, dst string) (*SL, error) {
 	if !exist {
 		return nil, fmt.Errorf("Unknown destination '%s'%s", dst, msgerr)
 	}
+
+	src, _ := dirAbsPath(link)
+	base := filepath.Dir(src)
+	var hasBase, hasSrc bool
+	var baseTarget, srcTarget string
+	if hasBase, baseTarget, err = dirExists(base); err != nil {
+		return nil, fmt.Errorf("Impossible to check/access link parent folder '%s':\n'%+v'", base, err)
+	}
+	if !hasBase {
+		if err = osMkdirAll(base, os.ModeDir); err != nil {
+			return nil, fmt.Errorf("Impossible to create link parent folder '%s':\n'%+v'", base, err)
+		}
+	} else if baseTarget != "" {
+		// move folder to x.1 (or error?)
+	}
+	if hasSrc, srcTarget, err = dirExists(src); err != nil {
+		return nil, fmt.Errorf("Impossible to check/access link'%s':\n'%+v'", src, err)
+	}
+	if !hasSrc {
+		// do the symlink
+	} else if srcTarget != "" {
+		// check if points already to dst. If not move or error
+	} else {
+		// move folder to xx.1
+	}
+
 	return nil, nil
 }
 

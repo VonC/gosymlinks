@@ -66,7 +66,7 @@ func TestSource(t *testing.T) {
 	osStat = testOsStat
 	execRun = testExecRun
 	tests := []*test{
-		&test{src: "parentNotYetCreated/newlink", err: "The system cannot find the path specified"},
+		&test{src: "parentNotYetCreated/newlink", err: ""},
 	}
 	var sl *SL
 	var err error
