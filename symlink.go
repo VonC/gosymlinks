@@ -32,6 +32,7 @@ func New(link, dst string) (*SL, error) {
 	}
 
 	src, _ := dirAbsPath(link)
+	fmt.Printf("src='%+v\n", src)
 	base := filepath.Dir(src)
 	var hasBase, hasSrc bool
 	var baseTarget, srcTarget string
