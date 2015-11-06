@@ -32,31 +32,33 @@ func New(link, dst string) (*SL, error) {
 	}
 
 	src, _ := dirAbsPath(link)
-	fmt.Printf("src='%+v\n", src)
-	base := filepath.Dir(src)
-	var hasBase, hasSrc bool
-	var baseTarget, srcTarget string
-	if hasBase, baseTarget, err = dirExists(base); err != nil {
-		return nil, fmt.Errorf("Impossible to check/access link parent folder '%s':\n'%+v'", base, err)
-	}
-	if !hasBase {
-		if err = osMkdirAll(base, os.ModeDir); err != nil {
-			return nil, fmt.Errorf("Impossible to create link parent folder '%s':\n'%+v'", base, err)
+	dir := filepath.Dir(filepath.Dir(src))
+	fmt.Printf("src='%+v\ndir=%+v\ndst=%+v\n", src, dir, dst)
+	var hasDir, hasSrc bool
+	var dirTarget, srcTarget string
+	if hasDir, dirTarget, err = dirExists(dir); err != nil {
+		if strings.Contains(err.Error(), "The system cannot find the path specified") == false {
+			return nil, fmt.Errorf("Impossible to check/access link parent folder '%s':\n'%+v'", dir, err)
 		}
-	} else if baseTarget != "" {
+	}
+	if !hasDir {
+		if err = osMkdirAll(dir, os.ModeDir); err != nil {
+			return nil, fmt.Errorf("Impossible to create link parent folder '%s':\n'%+v'", dir, err)
+		}
+	} else if dirTarget != "" {
 		// move folder to x.1 (or error?)
 	}
 	if hasSrc, srcTarget, err = dirExists(src); err != nil {
-		return nil, fmt.Errorf("Impossible to check/access link'%s':\n'%+v'", src, err)
+		if strings.Contains(err.Error(), "The system cannot find the file specified") == false {
+			return nil, fmt.Errorf("Impossible to check/access link'%s':\n'%+v'", src, err)
+		}
 	}
-	if !hasSrc {
-		// do the symlink
-	} else if srcTarget != "" {
+	if srcTarget != "" {
 		// check if points already to dst. If not move or error
-	} else {
+	} else if hasSrc {
 		// move folder to xx.1
 	}
-
+	// do symlink
 	return nil, nil
 }
 
