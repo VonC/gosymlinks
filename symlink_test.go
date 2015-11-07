@@ -66,7 +66,8 @@ func TestSource(t *testing.T) {
 	osStat = testOsStat
 	execRun = testExecRun
 	tests := []*test{
-		&test{src: "parentNotYetCreated/newlink", err: "xx"},
+		&test{src: "parentNotYetCreated/newlink"},
+		&test{src: "badSrcParent/newlink", err: "Test error badSrcParent on os.Stat with non-nil fi"},
 	}
 	var sl *SL
 	var err error
@@ -105,6 +106,10 @@ func testOsStat(name string) (os.FileInfo, error) {
 	if strings.HasSuffix(name, `prj\symlink\WarningOnDir\dir\`) {
 		fi, _ := os.Stat(".")
 		return fi, fmt.Errorf("readlink for warning on dir")
+	}
+	if strings.HasSuffix(name, `prj\symlink\badSrcParent\`) {
+		fi, _ := os.Stat(".")
+		return fi, fmt.Errorf("Test error badSrcParent on os.Stat with non-nil fi")
 	}
 	return os.Stat(name)
 }

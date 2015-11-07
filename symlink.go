@@ -32,7 +32,7 @@ func New(link, dst string) (*SL, error) {
 	}
 
 	src, _ := dirAbsPath(link)
-	dir := filepath.Dir(filepath.Dir(src))
+	dir := filepath.Dir(filepath.Dir(src)) + string(filepath.Separator)
 	fmt.Printf("src='%+v\ndir=%+v\ndst=%+v\n", src, dir, dst)
 	var hasDir, hasSrc bool
 	var dirTarget, srcTarget string
