@@ -37,7 +37,7 @@ func New(link, dst string) (*SL, error) {
 	var hasDir, hasSrc bool
 	var dirTarget, srcTarget string
 	if hasDir, dirTarget, err = dirExists(dir); err != nil {
-		if strings.Contains(err.Error(), "The system cannot find the path specified") == false {
+		if strings.Contains(err.Error(), "The system cannot find the") == false {
 			return nil, fmt.Errorf("Impossible to check/access link parent folder '%s':\n'%+v'", dir, err)
 		}
 	}
@@ -49,7 +49,7 @@ func New(link, dst string) (*SL, error) {
 		// move folder to x.1 (or error?)
 	}
 	if hasSrc, srcTarget, err = dirExists(src); err != nil {
-		if strings.Contains(err.Error(), "The system cannot find the file specified") == false {
+		if strings.Contains(err.Error(), "The system cannot find the") == false {
 			return nil, fmt.Errorf("Impossible to check/access link'%s':\n'%+v'", src, err)
 		}
 	}
