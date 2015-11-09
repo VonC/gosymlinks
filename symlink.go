@@ -31,31 +31,34 @@ func New(link, dst string) (*SL, error) {
 		return nil, fmt.Errorf("Unknown destination '%s'%s", dst, msgerr)
 	}
 
-	src, _ := dirAbsPath(link)
-	dir := filepath.Dir(filepath.Dir(src)) + string(filepath.Separator)
-	fmt.Printf("src='%+v\ndir=%+v\ndst=%+v\n", src, dir, dst)
-	var hasDir, hasSrc bool
-	var dirTarget, srcTarget string
-	if hasDir, dirTarget, err = dirExists(dir); err != nil {
+	if link, err = dirAbsPath(link); err != nil {
+		return nil, err
+	}
+	linkdir := filepath.Dir(filepath.Dir(link)) + string(filepath.Separator)
+	fmt.Printf("link='%+v\nlinkdir=%+v\ndst=%+v\n", link, linkdir, dst)
+	var hasLinkDir, hasLink bool
+	var linkDirTarget, linkTarget string
+	if hasLinkDir, linkDirTarget, err = dirExists(linkdir); err != nil {
 		if strings.Contains(err.Error(), "The system cannot find the") == false {
-			return nil, fmt.Errorf("Impossible to check/access link parent folder '%s':\n'%+v'", dir, err)
+			return nil, fmt.Errorf("Impossible to check/access link parent folder '%s':\n'%+v'", linkdir, err)
 		}
 	}
-	if !hasDir {
-		if err = osMkdirAll(dir, os.ModeDir); err != nil {
-			return nil, fmt.Errorf("Impossible to create link parent folder '%s':\n'%+v'", dir, err)
+	if !hasLinkDir {
+		if err = osMkdirAll(linkdir, os.ModeDir); err != nil {
+			return nil, fmt.Errorf("Impossible to create link parent folder '%s':\n'%+v'", linkdir, err)
 		}
-	} else if dirTarget != "" {
+	} else if linkDirTarget != "" {
+		// TODO move
 		// move folder to x.1 (or error?)
 	}
-	if hasSrc, srcTarget, err = dirExists(src); err != nil {
+	if hasLink, linkTarget, err = dirExists(link); err != nil {
 		if strings.Contains(err.Error(), "The system cannot find the") == false {
-			return nil, fmt.Errorf("Impossible to check/access link'%s':\n'%+v'", src, err)
+			return nil, fmt.Errorf("Impossible to check/access link'%s':\n'%+v'", link, err)
 		}
 	}
-	if srcTarget != "" {
+	if linkTarget != "" {
 		// check if points already to dst. If not move or error
-	} else if hasSrc {
+	} else if hasLink {
 		// move folder to xx.1
 	}
 	// do symlink
@@ -101,7 +104,7 @@ func dirExists(path string) (bool, string, error) {
 	}
 	r := regexp.MustCompile(fmt.Sprintf(`(?m)<J[UO]NCTION>\s+%s\s+\[([^\]]+)\]\s*$`, base))
 	n := r.FindAllStringSubmatch(sdir, -1)
-	// fmt.Printf("n='%+v'\nr='%+v'\n", n, r)
+	fmt.Printf("n='%+v'\nr='%+v'\n", n, r)
 	if len(n) == 1 {
 		return true, n[0][1], nil
 	}
