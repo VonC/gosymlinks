@@ -65,24 +65,29 @@ func TestDestination(t *testing.T) {
 func TestSource(t *testing.T) {
 	osStat = testOsStat
 	execRun = testExecRun
+	osMkdirAll = testOsMkdirAll
+
 	tests := []*test{
-		&test{src: "parentNotYetCreated/newlink"},
-		&test{src: "badSrcParent/newlink", err: "Test error badSrcParent on os.Stat with non-nil fi"},
+		// &test{src: "parentNotYetCreated/newlink"},
+		// &test{src: "badSrcParent/newlink", err: "Test error badSrcParent on os.Stat with non-nil fi"},
+		// &test{src: "badSrcParentMdirAll/newlink", err: "Error on mkDirAll for"},
+		&test{src: "symlinkdir/newlink", err: "Error on ss"},
 	}
 	var sl *SL
 	var err error
 	for _, test := range tests {
 		sl, err = New(test.src, ".")
-		if err == nil || strings.Contains(err.Error(), test.err) == false {
+		if err != nil && strings.Contains(err.Error(), test.err) == false {
 			t.Errorf("Err '%v', expected '%s'", err, test.err)
 		}
-		if sl == nil {
+		if sl == nil && err == nil {
 			t.Errorf("SL '%v', expected NOT <nil>", sl)
 		}
 	}
 }
 
 func testOsStat(name string) (os.FileInfo, error) {
+	fmt.Printf("testOsStat name='%+v'\n", name)
 	if strings.HasSuffix(name, `prj\symlink\err\`) {
 		fi, _ := os.Stat(".")
 		return fi, fmt.Errorf("Test error on os.Stat with non-nil fi")
@@ -111,11 +116,31 @@ func testOsStat(name string) (os.FileInfo, error) {
 		fi, _ := os.Stat(".")
 		return fi, fmt.Errorf("Test error badSrcParent on os.Stat with non-nil fi")
 	}
+	if strings.HasSuffix(name, `prj\symlink\symlinkdir\`) {
+		fi, _ := os.Stat(".")
+		return fi, fmt.Errorf("readlink for symlinkdir")
+	}
 	return os.Stat(name)
 }
 
+func testOsMkdirAll(path string, perm os.FileMode) error {
+	fmt.Printf("testOsMkdirAll path='%+v'\n", path)
+	if strings.HasSuffix(path, `badSrcParentMdirAll\`) {
+		return fmt.Errorf("Error on mkDirAll for '%s'", path)
+	}
+	return nil
+}
+
+var junctionOut = `
+ Répertoire de C:\Users\VonC\prog\git\ggb\deps\src\github.com\VonC
+
+22/06/2015  11:03    <REP>          .
+22/06/2015  11:03    <REP>          ..
+22/06/2015  11:03    <JONCTION>     symlink [C:\Users\VonC\prog\git\ggb\]
+22/06/2015  11:03    <JONCTION>     symlinkdir [C:\Users\VonC\prog\git\ggb\]`
+
 func testExecRun(cmd *exec.Cmd) error {
-	// fmt.Printf("cmd='%+v'\n", cmd.Dir)
+	fmt.Printf("testExecRun cmd='%v' in '%s'\n", cmd.Args, cmd.Dir)
 	if strings.HasSuffix(cmd.Dir, `\WarningOnDir`) {
 		io.WriteString(cmd.Stdout, "dummy content")
 		io.WriteString(cmd.Stderr, "Some warning on dir")
@@ -129,16 +154,8 @@ func testExecRun(cmd *exec.Cmd) error {
 		return fmt.Errorf("unreadable dir on symlink")
 	}
 	if strings.HasSuffix(cmd.Dir, `\symlink`) {
-		out := `
- Répertoire de C:\Users\VonC\prog\git\ggb\deps\src\github.com\VonC
-
-22/06/2015  11:03    <REP>          .
-22/06/2015  11:03    <REP>          ..
-22/06/2015  11:03    <JONCTION>     symlink [C:\Users\VonC\prog\git\ggb\]`
-		io.WriteString(cmd.Stdout, out)
-		// fmt.Printf("i='%d', e='%+v'\n", i, e)
+		io.WriteString(cmd.Stdout, junctionOut)
 		return nil
-	} else {
-		return cmdRun(cmd)
 	}
+	return cmdRun(cmd)
 }

@@ -48,7 +48,7 @@ func New(link, dst string) (*SL, error) {
 			return nil, fmt.Errorf("Impossible to create link parent folder '%s':\n'%+v'", linkdir, err)
 		}
 	} else if linkDirTarget != "" {
-		// TODO move
+		fmt.Printf("Move '%s' to '%s.1'\n", linkdir, linkdir)
 		// move folder to x.1 (or error?)
 	}
 	if hasLink, linkTarget, err = dirExists(link); err != nil {
