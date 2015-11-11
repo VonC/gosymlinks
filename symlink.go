@@ -43,13 +43,17 @@ func New(link, dst string) (*SL, error) {
 			return nil, fmt.Errorf("Impossible to check/access link parent folder '%s':\n'%+v'", linkdir, err)
 		}
 	}
+	if linkDirTarget != "" {
+		if err = moveToDotX(linkdir); err != nil {
+			return nil, err
+		}
+		// move folder to x.1 (or error?)
+		hasLinkDir = false
+	}
 	if !hasLinkDir {
 		if err = osMkdirAll(linkdir, os.ModeDir); err != nil {
 			return nil, fmt.Errorf("Impossible to create link parent folder '%s':\n'%+v'", linkdir, err)
 		}
-	} else if linkDirTarget != "" {
-		fmt.Printf("Move '%s' to '%s.1'\n", linkdir, linkdir)
-		// move folder to x.1 (or error?)
 	}
 	if hasLink, linkTarget, err = dirExists(link); err != nil {
 		if strings.Contains(err.Error(), "The system cannot find the") == false {
@@ -63,6 +67,33 @@ func New(link, dst string) (*SL, error) {
 	}
 	// do symlink
 	return nil, nil
+}
+
+var osRename = os.Rename
+
+func moveToDotX(path string) error {
+	path = filepath.Dir(path)
+	i := 1
+	newpath := fmt.Sprintf("%s.%d", path, i)
+	for {
+
+		exist, _, err := dirExists(newpath)
+		if err != nil {
+			if strings.Contains(err.Error(), "The system cannot find the") == false {
+				return err
+			}
+		}
+		if !exist {
+			break
+		}
+		i = i + 1
+		newpath = fmt.Sprintf("%s.%d", path, i)
+	}
+	fmt.Printf("Move '%s' to '%s'\n", path, newpath)
+	if err := osRename(path, newpath); err != nil {
+		return err
+	}
+	return nil
 }
 
 // a/b => c:\path\to\a\b\

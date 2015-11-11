@@ -66,6 +66,7 @@ func TestSource(t *testing.T) {
 	osStat = testOsStat
 	execRun = testExecRun
 	osMkdirAll = testOsMkdirAll
+	osRename = testOsRename
 
 	tests := []*test{
 		// &test{src: "parentNotYetCreated/newlink"},
@@ -120,6 +121,10 @@ func testOsStat(name string) (os.FileInfo, error) {
 		fi, _ := os.Stat(".")
 		return fi, fmt.Errorf("readlink for symlinkdir")
 	}
+	if strings.HasSuffix(name, `.1`) {
+		fi, _ := os.Stat(".")
+		return fi, nil
+	}
 	return os.Stat(name)
 }
 
@@ -158,4 +163,9 @@ func testExecRun(cmd *exec.Cmd) error {
 		return nil
 	}
 	return cmdRun(cmd)
+}
+
+func testOsRename(oldpath, newpath string) error {
+	fmt.Printf("testOsRename oldpath='%v', newpath '%s'\n", oldpath, newpath)
+	return nil
 }
