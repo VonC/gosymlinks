@@ -145,7 +145,11 @@ var junctionOut = `
 22/06/2015  11:03    <JONCTION>     symlinkdir [C:\Users\VonC\prog\git\ggb\]`
 
 func testExecRun(cmd *exec.Cmd) error {
-	fmt.Printf("testExecRun cmd='%v' in '%s'\n", cmd.Args, cmd.Dir)
+	tmsg := fmt.Sprintf("testExecRun cmd='%v' in '%s'", cmd.Args, cmd.Dir)
+	fmt.Println(tmsg)
+	if strings.Contains(tmsg, "/J") {
+		return nil
+	}
 	if strings.HasSuffix(cmd.Dir, `\WarningOnDir`) {
 		io.WriteString(cmd.Stdout, "dummy content")
 		io.WriteString(cmd.Stderr, "Some warning on dir")

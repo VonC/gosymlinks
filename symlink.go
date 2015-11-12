@@ -65,8 +65,11 @@ func New(link, dst string) (*SL, error) {
 	} else if hasLink {
 		// move folder to xx.1
 	}
-	// do symlink
-	return nil, nil
+	if _, err = execcmd("mklink", fmt.Sprintf("/J %s %s", link, dst), linkdir); err != nil {
+		return nil, fmt.Errorf("Impossible to create junction between '%s' and '%s':\n'%+v'", link, dst, err)
+	}
+	res := &SL{path: link, dst: dst}
+	return res, nil
 }
 
 var osRename = os.Rename
