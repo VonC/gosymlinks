@@ -81,6 +81,9 @@ func TestSource(t *testing.T) {
 		if err != nil && strings.Contains(err.Error(), test.err) == false {
 			t.Errorf("Err '%v', expected '%s'", err, test.err)
 		}
+		if err == nil && test.err != "" {
+			t.Errorf("Err nil, expected '%s'", test.err)
+		}
 		if sl == nil && err == nil {
 			t.Errorf("SL '%v', expected NOT <nil>", sl)
 		}
