@@ -72,7 +72,8 @@ func TestSource(t *testing.T) {
 		// &test{src: "parentNotYetCreated/newlink"},
 		// &test{src: "badSrcParent/newlink", err: "Test error badSrcParent on os.Stat with non-nil fi"},
 		// &test{src: "badSrcParentMdirAll/newlink", err: "Error on mkDirAll for"},
-		&test{src: "symlinkdir/newlink", err: "Error on ss"},
+		&test{src: "symlinkdir/newlink", err: ""},
+		&test{src: "badsrcparentdir/newlink", err: "Impossible to check/access link parent folder"},
 	}
 	var sl *SL
 	var err error
@@ -123,6 +124,9 @@ func testOsStat(name string) (os.FileInfo, error) {
 	if strings.HasSuffix(name, `prj\symlink\symlinkdir\`) {
 		fi, _ := os.Stat(".")
 		return fi, fmt.Errorf("readlink for symlinkdir")
+	}
+	if strings.HasSuffix(name, `prj\symlink\badsrcparentdir\`) {
+		return nil, fmt.Errorf("badsrcparentdir cannot be stat'd")
 	}
 	if strings.HasSuffix(name, `.1`) {
 		fi, _ := os.Stat(".")
