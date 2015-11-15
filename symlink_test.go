@@ -74,6 +74,7 @@ func TestSource(t *testing.T) {
 		// &test{src: "badSrcParentMdirAll/newlink", err: "Error on mkDirAll for"},
 		&test{src: "symlinkdir/newlink", err: ""},
 		&test{src: "badsrcparentdir/newlink", err: "Impossible to check/access link parent folder"},
+		&test{src: string([]byte{0}), err: "invalid argument"},
 	}
 	var sl *SL
 	var err error
