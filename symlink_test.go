@@ -75,6 +75,7 @@ func TestSource(t *testing.T) {
 		&test{src: "symlinkdir/newlink", err: ""},
 		&test{src: "badsrcparentdir/newlink", err: "Impossible to check/access link parent folder"},
 		&test{src: string([]byte{0}), err: "invalid argument"},
+		&test{src: "parentnomovesymlinkdir/newlink", err: "Unable to rename "},
 	}
 	var sl *SL
 	var err error
@@ -126,6 +127,10 @@ func testOsStat(name string) (os.FileInfo, error) {
 		fi, _ := os.Stat(".")
 		return fi, fmt.Errorf("readlink for symlinkdir")
 	}
+	if strings.HasSuffix(name, `prj\symlink\parentnomovesymlinkdir\`) {
+		fi, _ := os.Stat(".")
+		return fi, fmt.Errorf("readlink for src parent no move")
+	}
 	if strings.HasSuffix(name, `prj\symlink\badsrcparentdir\`) {
 		return nil, fmt.Errorf("badsrcparentdir cannot be stat'd")
 	}
@@ -150,7 +155,9 @@ var junctionOut = `
 22/06/2015  11:03    <REP>          .
 22/06/2015  11:03    <REP>          ..
 22/06/2015  11:03    <JONCTION>     symlink [C:\Users\VonC\prog\git\ggb\]
-22/06/2015  11:03    <JONCTION>     symlinkdir [C:\Users\VonC\prog\git\ggb\]`
+22/06/2015  11:03    <JONCTION>     symlinkdir [C:\Users\VonC\prog\git\ggb\]
+22/06/2015  11:03    <JONCTION>     parentnomovesymlinkdir [C:\Users\VonC\prog\git\ggb\]
+`
 
 func testExecRun(cmd *exec.Cmd) error {
 	tmsg := fmt.Sprintf("testExecRun cmd='%v' in '%s'", cmd.Args, cmd.Dir)
@@ -174,10 +181,17 @@ func testExecRun(cmd *exec.Cmd) error {
 		io.WriteString(cmd.Stdout, junctionOut)
 		return nil
 	}
+	if strings.HasSuffix(cmd.Dir, `\parentnomovesymlinkdir`) {
+		io.WriteString(cmd.Stdout, junctionOut)
+		return nil
+	}
 	return cmdRun(cmd)
 }
 
 func testOsRename(oldpath, newpath string) error {
 	fmt.Printf("testOsRename oldpath='%v', newpath '%s'\n", oldpath, newpath)
+	if strings.HasSuffix(oldpath, `\parentnomovesymlinkdir`) {
+		return fmt.Errorf("Unable to rename '%s' to '%s'", oldpath, newpath)
+	}
 	return nil
 }
