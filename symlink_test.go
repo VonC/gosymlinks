@@ -69,13 +69,14 @@ func TestSource(t *testing.T) {
 	osRename = testOsRename
 
 	tests := []*test{
-		// &test{src: "parentNotYetCreated/newlink"},
-		// &test{src: "badSrcParent/newlink", err: "Test error badSrcParent on os.Stat with non-nil fi"},
-		// &test{src: "badSrcParentMdirAll/newlink", err: "Error on mkDirAll for"},
+		&test{src: "parentNotYetCreated/newlink"},
+		&test{src: "badSrcParent/newlink", err: "Test error badSrcParent on os.Stat with non-nil fi"},
+		&test{src: "badSrcParentMdirAll/newlink", err: "Error on mkDirAll for"},
 		&test{src: "symlinkdir/newlink", err: ""},
 		&test{src: "badsrcparentdir/newlink", err: "Impossible to check/access link parent folder"},
 		&test{src: string([]byte{0}), err: "invalid argument"},
 		&test{src: "parentnomovesymlinkdir/newlink", err: "Unable to rename "},
+		&test{src: "parent/newlinkBadStat", err: "newlinkBadStat cannot be stat"},
 	}
 	var sl *SL
 	var err error
@@ -133,6 +134,9 @@ func testOsStat(name string) (os.FileInfo, error) {
 	}
 	if strings.HasSuffix(name, `prj\symlink\badsrcparentdir\`) {
 		return nil, fmt.Errorf("badsrcparentdir cannot be stat'd")
+	}
+	if strings.HasSuffix(name, `prj\symlink\parent\newlinkBadStat\`) {
+		return nil, fmt.Errorf("newlinkBadStat cannot be stat'd")
 	}
 	if strings.HasSuffix(name, `.1`) {
 		fi, _ := os.Stat(".")

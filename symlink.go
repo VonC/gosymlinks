@@ -55,6 +55,7 @@ func New(link, dst string) (*SL, error) {
 			return nil, fmt.Errorf("Impossible to create link parent folder '%s':\n'%+v'", linkdir, err)
 		}
 	}
+	// fmt.Printf("==== link '%s'\n", link)
 	if hasLink, linkTarget, err = dirExists(link); err != nil {
 		if strings.Contains(err.Error(), "The system cannot find the") == false {
 			return nil, fmt.Errorf("Impossible to check/access link'%s':\n'%+v'", link, err)
@@ -118,6 +119,7 @@ var osStat = os.Stat
 
 func dirExists(path string) (bool, string, error) {
 	fi, err := osStat(path)
+	// fmt.Printf("==== fi='%+v', err='%+v'\n", fi, err)
 	if fi == nil {
 		return false, "", err
 	}
