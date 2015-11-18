@@ -61,10 +61,13 @@ func New(link, dst string) (*SL, error) {
 			return nil, fmt.Errorf("Impossible to check/access link'%s':\n'%+v'", link, err)
 		}
 	}
-	if linkTarget != "" {
-		// check if points already to dst. If not move or error
-	} else if hasLink {
-		// move folder to xx.1
+	if linkTarget == dst {
+		return &SL{path: link, dst: dst}, nil
+	}
+	if hasLink {
+		if err = moveToDotX(link); err != nil {
+			return nil, err
+		}
 	}
 	if _, err = execcmd("mklink", fmt.Sprintf("/J %s %s", link, dst), linkdir); err != nil {
 		return nil, fmt.Errorf("Impossible to create junction between '%s' and '%s':\n'%+v'", link, dst, err)
