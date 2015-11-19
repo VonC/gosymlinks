@@ -77,6 +77,7 @@ func TestSource(t *testing.T) {
 		&test{src: string([]byte{0}), err: "invalid argument"},
 		&test{src: "parentnomovesymlinkdir/newlink", err: "Unable to rename "},
 		&test{src: "parent/newlinkBadStat", err: "newlinkBadStat cannot be stat"},
+		&test{src: "existingparent/existingsymlink", err: ""},
 	}
 	var sl *SL
 	var err error
@@ -91,6 +92,7 @@ func TestSource(t *testing.T) {
 		if sl == nil && err == nil {
 			t.Errorf("SL '%v', expected NOT <nil>", sl)
 		}
+		fmt.Println("------------------")
 	}
 }
 
@@ -138,6 +140,14 @@ func testOsStat(name string) (os.FileInfo, error) {
 	if strings.HasSuffix(name, `prj\symlink\parent\newlinkBadStat\`) {
 		return nil, fmt.Errorf("newlinkBadStat cannot be stat'd")
 	}
+	if strings.HasSuffix(name, `prj\symlink\existingparent\`) {
+		fi, _ := os.Stat(".")
+		return fi, nil
+	}
+	if strings.HasSuffix(name, `prj\symlink\existingparent\existingsymlink\`) {
+		fi, _ := os.Stat(".")
+		return fi, fmt.Errorf("readlink for existingsymlink")
+	}
 	if strings.HasSuffix(name, `.1`) {
 		fi, _ := os.Stat(".")
 		return fi, nil
@@ -161,6 +171,7 @@ var junctionOut = `
 22/06/2015  11:03    <JONCTION>     symlink [C:\Users\VonC\prog\git\ggb\]
 22/06/2015  11:03    <JONCTION>     symlinkdir [C:\Users\VonC\prog\git\ggb\]
 22/06/2015  11:03    <JONCTION>     parentnomovesymlinkdir [C:\Users\VonC\prog\git\ggb\]
+22/06/2015  11:03    <JONCTION>     existingsymlink [C:\Users\VonC\prog\git\ggb\prj\symlink\]
 `
 
 func testExecRun(cmd *exec.Cmd) error {
@@ -181,12 +192,24 @@ func testExecRun(cmd *exec.Cmd) error {
 	if strings.HasSuffix(cmd.Dir, `\badsymlink`) {
 		return fmt.Errorf("unreadable dir on symlink")
 	}
+
+	path := ""
+	if strings.Contains(cmd.Dir, `ggb\`) {
+		i := strings.Index(cmd.Dir, `ggb\`)
+		path = cmd.Dir[:i+len(`ggb\`)]
+	}
+	jjunctionOut := strings.Replace(junctionOut, `C:\Users\VonC\prog\git\ggb\`, path, -1)
+
 	if strings.HasSuffix(cmd.Dir, `\symlink`) {
-		io.WriteString(cmd.Stdout, junctionOut)
+		io.WriteString(cmd.Stdout, jjunctionOut)
 		return nil
 	}
 	if strings.HasSuffix(cmd.Dir, `\parentnomovesymlinkdir`) {
-		io.WriteString(cmd.Stdout, junctionOut)
+		io.WriteString(cmd.Stdout, jjunctionOut)
+		return nil
+	}
+	if strings.HasSuffix(cmd.Dir, `\existingparent`) {
+		io.WriteString(cmd.Stdout, jjunctionOut)
 		return nil
 	}
 	return cmdRun(cmd)

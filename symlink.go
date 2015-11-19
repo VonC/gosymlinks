@@ -35,7 +35,7 @@ func New(link, dst string) (*SL, error) {
 		return nil, err
 	}
 	linkdir := filepath.Dir(filepath.Dir(link)) + string(filepath.Separator)
-	fmt.Printf("link='%+v\nlinkdir=%+v\ndst=%+v\n", link, linkdir, dst)
+	// fmt.Printf("link='%+v\nlinkdir=%+v\ndst=%+v\n", link, linkdir, dst)
 	var hasLinkDir, hasLink bool
 	var linkDirTarget, linkTarget string
 	if hasLinkDir, linkDirTarget, err = dirExists(linkdir); err != nil {
@@ -61,6 +61,7 @@ func New(link, dst string) (*SL, error) {
 			return nil, fmt.Errorf("Impossible to check/access link'%s':\n'%+v'", link, err)
 		}
 	}
+	// fmt.Printf("=> linkTarget='%s' vs. dst='%s'\n", linkTarget, dst)
 	if linkTarget == dst {
 		return &SL{path: link, dst: dst}, nil
 	}
