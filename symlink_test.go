@@ -78,6 +78,7 @@ func TestSource(t *testing.T) {
 		&test{src: "parentnomovesymlinkdir/newlink", err: "Unable to rename "},
 		&test{src: "parent/newlinkBadStat", err: "newlinkBadStat cannot be stat"},
 		&test{src: "existingparent/existingsymlink", err: ""},
+		&test{src: "existingparent/existingsymlinkdiff", err: "xxx"},
 	}
 	var sl *SL
 	var err error
@@ -148,6 +149,10 @@ func testOsStat(name string) (os.FileInfo, error) {
 		fi, _ := os.Stat(".")
 		return fi, fmt.Errorf("readlink for existingsymlink")
 	}
+	if strings.HasSuffix(name, `prj\symlink\existingparent\existingsymlinkdiff\`) {
+		fi, _ := os.Stat(".")
+		return fi, fmt.Errorf("readlink for existingsymlinkdiff")
+	}
 	if strings.HasSuffix(name, `.1`) {
 		fi, _ := os.Stat(".")
 		return fi, nil
@@ -172,6 +177,7 @@ var junctionOut = `
 22/06/2015  11:03    <JONCTION>     symlinkdir [C:\Users\VonC\prog\git\ggb\]
 22/06/2015  11:03    <JONCTION>     parentnomovesymlinkdir [C:\Users\VonC\prog\git\ggb\]
 22/06/2015  11:03    <JONCTION>     existingsymlink [C:\Users\VonC\prog\git\ggb\prj\symlink\]
+22/06/2015  11:03    <JONCTION>     existingsymlinkdiff [C:\Users\VonC\prog\git\ggb\prj\symlink\diff\]
 `
 
 func testExecRun(cmd *exec.Cmd) error {
