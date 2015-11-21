@@ -79,6 +79,7 @@ func TestSource(t *testing.T) {
 		&test{src: "parent/newlinkBadStat", err: "newlinkBadStat cannot be stat"},
 		&test{src: "existingparent/existingsymlink", err: ""},
 		&test{src: "existingparent/existingsymlinkdiff", err: "xxx"},
+		&test{src: "existingparent/existingsymlinkdiffnomove", err: "Unable to rename"},
 	}
 	var sl *SL
 	var err error
@@ -153,6 +154,10 @@ func testOsStat(name string) (os.FileInfo, error) {
 		fi, _ := os.Stat(".")
 		return fi, fmt.Errorf("readlink for existingsymlinkdiff")
 	}
+	if strings.HasSuffix(name, `prj\symlink\existingparent\existingsymlinkdiffnomove\`) {
+		fi, _ := os.Stat(".")
+		return fi, fmt.Errorf("readlink for existingsymlinkdiffnomove")
+	}
 	if strings.HasSuffix(name, `.1`) {
 		fi, _ := os.Stat(".")
 		return fi, nil
@@ -178,6 +183,7 @@ var junctionOut = `
 22/06/2015  11:03    <JONCTION>     parentnomovesymlinkdir [C:\Users\VonC\prog\git\ggb\]
 22/06/2015  11:03    <JONCTION>     existingsymlink [C:\Users\VonC\prog\git\ggb\prj\symlink\]
 22/06/2015  11:03    <JONCTION>     existingsymlinkdiff [C:\Users\VonC\prog\git\ggb\prj\symlink\diff\]
+22/06/2015  11:03    <JONCTION>     existingsymlinkdiffnomove [C:\Users\VonC\prog\git\ggb\prj\symlink\diff\]
 `
 
 func testExecRun(cmd *exec.Cmd) error {
@@ -224,6 +230,9 @@ func testExecRun(cmd *exec.Cmd) error {
 func testOsRename(oldpath, newpath string) error {
 	fmt.Printf("testOsRename oldpath='%v', newpath '%s'\n", oldpath, newpath)
 	if strings.HasSuffix(oldpath, `\parentnomovesymlinkdir`) {
+		return fmt.Errorf("Unable to rename '%s' to '%s'", oldpath, newpath)
+	}
+	if strings.HasSuffix(oldpath, `\existingsymlinkdiffnomove`) {
 		return fmt.Errorf("Unable to rename '%s' to '%s'", oldpath, newpath)
 	}
 	return nil
