@@ -78,8 +78,9 @@ func TestSource(t *testing.T) {
 		&test{src: "parentnomovesymlinkdir/newlink", err: "Unable to rename "},
 		&test{src: "parent/newlinkBadStat", err: "newlinkBadStat cannot be stat"},
 		&test{src: "existingparent/existingsymlink", err: ""},
-		&test{src: "existingparent/existingsymlinkdiff", err: "xxx"},
+		&test{src: "existingparent/existingsymlinkdiff", err: ""},
 		&test{src: "existingparent/existingsymlinkdiffnomove", err: "Unable to rename"},
+		&test{src: "parent/failedmklink", err: "Unable to run "},
 	}
 	var sl *SL
 	var err error
@@ -189,6 +190,9 @@ var junctionOut = `
 func testExecRun(cmd *exec.Cmd) error {
 	tmsg := fmt.Sprintf("testExecRun cmd='%v' in '%s'", cmd.Args, cmd.Dir)
 	fmt.Println(tmsg)
+	if strings.Contains(tmsg, `\failedmklink`) {
+		return fmt.Errorf("mklink fails")
+	}
 	if strings.Contains(tmsg, "/J") {
 		return nil
 	}
