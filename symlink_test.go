@@ -81,6 +81,7 @@ func TestSource(t *testing.T) {
 		&test{src: "existingparent/existingsymlinkdiff", err: ""},
 		&test{src: "existingparent/existingsymlinkdiffnomove", err: "Unable to rename"},
 		&test{src: "parent/failedmklink", err: "Unable to run "},
+		&test{src: "parent/existingsymlinkbadstat", err: "existingsymlinkbadstat.1 cannot be stat'd"},
 	}
 	var sl *SL
 	var err error
@@ -142,6 +143,13 @@ func testOsStat(name string) (os.FileInfo, error) {
 	}
 	if strings.HasSuffix(name, `prj\symlink\parent\newlinkBadStat\`) {
 		return nil, fmt.Errorf("newlinkBadStat cannot be stat'd")
+	}
+	if strings.HasSuffix(name, `prj\symlink\parent\existingsymlinkbadstat.1`) {
+		return nil, fmt.Errorf("existingsymlinkbadstat.1 cannot be stat'd")
+	}
+	if strings.HasSuffix(name, `prj\symlink\parent\existingsymlinkbadstat\`) {
+		fi, _ := os.Stat(".")
+		return fi, nil
 	}
 	if strings.HasSuffix(name, `prj\symlink\existingparent\`) {
 		fi, _ := os.Stat(".")
