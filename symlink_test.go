@@ -82,6 +82,7 @@ func TestSource(t *testing.T) {
 		&test{src: "existingparent/existingsymlinkdiffnomove", err: "Unable to rename"},
 		&test{src: "parent/failedmklink", err: "Unable to run "},
 		&test{src: "parent/existingsymlinkbadstat", err: "existingsymlinkbadstat.1 cannot be stat'd"},
+		&test{src: "parentbaddir/existingsymlinkbaddir", err: "Impossible to check/access"},
 	}
 	var sl *SL
 	var err error
@@ -151,6 +152,10 @@ func testOsStat(name string) (os.FileInfo, error) {
 		fi, _ := os.Stat(".")
 		return fi, nil
 	}
+	if strings.HasSuffix(name, `prj\symlink\parentbaddir\existingsymlinkbaddir\`) {
+		fi, _ := os.Stat(".")
+		return fi, fmt.Errorf("readlink for src no dir")
+	}
 	if strings.HasSuffix(name, `prj\symlink\existingparent\`) {
 		fi, _ := os.Stat(".")
 		return fi, nil
@@ -215,6 +220,9 @@ func testExecRun(cmd *exec.Cmd) error {
 	}
 	if strings.HasSuffix(cmd.Dir, `\badsymlink`) {
 		return fmt.Errorf("unreadable dir on symlink")
+	}
+	if strings.HasSuffix(cmd.Dir, `\parentbaddir`) {
+		return fmt.Errorf("unreadable dir on parentbaddir")
 	}
 
 	path := ""
