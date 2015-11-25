@@ -83,6 +83,7 @@ func TestSource(t *testing.T) {
 		&test{src: "parent/failedmklink", err: "Unable to run "},
 		&test{src: "parent/existingsymlinkbadstat", err: "existingsymlinkbadstat.1 cannot be stat'd"},
 		&test{src: "parentbaddir/existingsymlinkbaddir", err: "Impossible to check/access"},
+		&test{src: "parentnosymlink/existingnosymlink", err: "Unable to find junction symlink in parent dir"},
 	}
 	var sl *SL
 	var err error
@@ -164,6 +165,10 @@ func testOsStat(name string) (os.FileInfo, error) {
 		fi, _ := os.Stat(".")
 		return fi, fmt.Errorf("readlink for existingsymlink")
 	}
+	if strings.HasSuffix(name, `prj\symlink\parentnosymlink\existingnosymlink\`) {
+		fi, _ := os.Stat(".")
+		return fi, fmt.Errorf("readlink for parentnosymlink existingnosymlink")
+	}
 	if strings.HasSuffix(name, `prj\symlink\existingparent\existingsymlinkdiff\`) {
 		fi, _ := os.Stat(".")
 		return fi, fmt.Errorf("readlink for existingsymlinkdiff")
@@ -241,6 +246,10 @@ func testExecRun(cmd *exec.Cmd) error {
 		return nil
 	}
 	if strings.HasSuffix(cmd.Dir, `\existingparent`) {
+		io.WriteString(cmd.Stdout, jjunctionOut)
+		return nil
+	}
+	if strings.HasSuffix(cmd.Dir, `\parentnosymlink`) {
 		io.WriteString(cmd.Stdout, jjunctionOut)
 		return nil
 	}
