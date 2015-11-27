@@ -25,7 +25,7 @@ type test struct {
 }
 
 func TestDestination(t *testing.T) {
-	t.Skip("Skip TestDestination")
+	// t.Skip("Skip TestDestination")
 	// only a nil bit will make filepath.Abs() fail:
 	// https://github.com/golang/go/blob/d16c7f8004bd1c9f896367af7ea86f5530596b39/src/syscall/syscall_windows.go#L41
 	// from UTF16FromString (https://github.com/golang/go/blob/d16c7f8004bd1c9f896367af7ea86f5530596b39/src/syscall/syscall_windows.go#L71)
