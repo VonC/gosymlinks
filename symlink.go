@@ -61,11 +61,11 @@ func New(link, dst string) (*SL, error) {
 			return nil, fmt.Errorf("Impossible to check/access link'%s':\n'%+v'", link, err)
 		}
 	}
-	// fmt.Printf("=> linkTarget='%s' vs. dst='%s'\n", linkTarget, dst)
 	if linkTarget == dst {
 		return &SL{path: link, dst: dst}, nil
 	}
 	if hasLink {
+		fmt.Printf("=> linkTarget='%s' vs. dst='%s'\n", linkTarget, dst)
 		if err = moveToDotX(link); err != nil {
 			return nil, err
 		}
