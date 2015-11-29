@@ -206,8 +206,8 @@ var junctionOut = `
 22/06/2015  11:03    <JONCTION>     symlinkdir [C:\Users\VonC\prog\git\ggb\]
 22/06/2015  11:03    <JONCTION>     parentnomovesymlinkdir [C:\Users\VonC\prog\git\ggb\]
 22/06/2015  11:03    <JONCTION>     existingsymlink [C:\Users\VonC\prog\git\ggb\prj\symlink\]
-22/06/2015  11:03    <JONCTION>     existingsymlinkdiff [C:\Users\VonC\prog\git\ggb\prj\symlink\diff\]
-22/06/2015  11:03    <JONCTION>     existingsymlinkdiffnomove [C:\Users\VonC\prog\git\ggb\prj\symlink\diff\]
+22/06/2015  11:03    <JONCTION>     existingsymlinkdiff [C:\Users\VonC\prog\git\ggb\prj\symlink\diff]
+22/06/2015  11:03    <JONCTION>     existingsymlinkdiffnomove [C:\Users\VonC\prog\git\ggb\prj\symlink\diff]
 `
 
 func testExecRun(cmd *exec.Cmd) error {

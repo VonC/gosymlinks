@@ -146,7 +146,11 @@ func dirExists(path string) (bool, string, error) {
 	n := r.FindAllStringSubmatch(sdir, -1)
 	// fmt.Printf("n='%+v'\nr='%+v'\n", n, r)
 	if len(n) == 1 {
-		return true, n[0][1], nil
+		linkTarget := n[0][1]
+		if strings.HasSuffix(linkTarget, string(filepath.Separator)) == false {
+			linkTarget = linkTarget + string(filepath.Separator)
+		}
+		return true, linkTarget, nil
 	}
 	return false, "", fmt.Errorf("Unable to find junction symlink in parent dir '%s' for '%s'", dir, base)
 }
