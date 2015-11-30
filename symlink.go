@@ -61,6 +61,7 @@ func New(link, dst string) (*SL, error) {
 			return nil, fmt.Errorf("Impossible to check/access link'%s':\n'%+v'", link, err)
 		}
 	}
+	// fmt.Printf("=0> linkTarget='%s' vs. dst='%s'\n", linkTarget, dst)
 	if linkTarget == dst {
 		return &SL{path: link, dst: dst}, nil
 	}
@@ -120,26 +121,33 @@ func dirAbsPath(path string) (string, error) {
 }
 
 var osStat = os.Stat
+var osLstat = os.Lstat
+var osSameFile = os.SameFile
 
 func dirExists(path string) (bool, string, error) {
+	// fmt.Printf("=================\n")
+	// fmt.Printf("osStat(path) '%s'\n", path)
 	fi, err := osStat(path)
-	// fmt.Printf("==== fi='%+v', err='%+v'\n", fi, err)
 	if fi == nil {
 		return false, "", err
 	}
-	// sys := fi.Sys().(*syscall.Win32FileAttributeData)
-	if err == nil {
-		return true, "", nil
-	}
-	if strings.HasPrefix(err.Error(), "readlink ") == false {
+	// fmt.Printf("==== fi='%+v', err='%+v' (path='%+v'), name='%+v', size='%+v', mode='%+v', modTime='%+v', isdir='%+v'\n", fi, err, path, fi.Name(), fi.Size(), fi.Mode(), fi.ModTime(), fi.IsDir())
+	if err != nil {
 		return false, "", err
 	}
-	// This is a symlink (JUNCTION on Windows)
+	fil, err := osLstat(path)
+	// fmt.Printf("=22= fil='%+v', err='%+v' (path='%+v'), name='%+v', size='%+v', mode='%+v', modTime='%+v', isdir='%+v'\n", fil, err, path, fil.Name(), fil.Size(), fil.Mode(), fil.ModTime(), fil.IsDir())
+	if fil.Mode()&os.ModeSymlink == 0 {
+		// not a symlink
+		return true, "", nil
+	}
+	// This is a symlink (look for JUNCTION on Windows)
 	dir := filepath.Dir(path)
 	base := filepath.Base(dir)
 	dir = filepath.Dir(dir)
 	sdir := ""
 	if sdir, err = execcmd("dir", ".", dir); err != nil {
+		fmt.Printf("ERR %+v\n", err)
 		return false, "", err
 	}
 	r := regexp.MustCompile(fmt.Sprintf(`(?m)<J[UO]NCTION>\s+%s\s+\[([^\]]+)\]\s*$`, base))
