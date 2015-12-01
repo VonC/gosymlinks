@@ -8,6 +8,10 @@ import (
 )
 
 type Dir struct {
+	dirpath   string
+	exist     bool
+	issymlink bool
+	destpath  string
 }
 
 func DirFrom(path string) (*Dir, error) {
