@@ -3,6 +3,7 @@ package gosymlink
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -15,7 +16,19 @@ type Dir struct {
 }
 
 func DirFrom(path string) (*Dir, error) {
-	return &Dir{}, nil
+	res := &Dir{}
+	fi, err := os.Stat(path)
+	fmt.Printf("%s=> %+v err %+v\n", path, fi, err)
+	if fi == nil {
+		if strings.Contains(err.Error(), "The system cannot find the") {
+			return res, nil
+		}
+		return nil, err
+	}
+	if fi.IsDir() == false {
+		return nil, fmt.Errorf("%s is not a folder, it is a file", path)
+	}
+	return res, err
 }
 
 func cmdRun(cmd *exec.Cmd) error {

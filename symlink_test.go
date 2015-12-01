@@ -14,8 +14,10 @@ type testDir struct {
 }
 
 var testsDir = []testDir{
-	// Hollidays() would return 0 if no holidays.txt file
-	testDir{dirpath: "nonexistentdir"},
+	// Dir can reference a non-existent folder
+	testDir{dirpath: "nonexistentdir/"},
+	// Dir cannot reference a file
+	testDir{dirpath: "afile.txt", errormsg: "is not a folder, it is a file"},
 }
 
 func TestDir(t *testing.T) {
