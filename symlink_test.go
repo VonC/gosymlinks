@@ -67,6 +67,7 @@ func TestSource(t *testing.T) {
 	execRun = testExecRun
 	osMkdirAll = testOsMkdirAll
 	osRename = testOsRename
+	osModeSymlink = testOsModeSymlink
 
 	tests := []*test{
 		&test{src: "parentNotYetCreated/newlink"},
@@ -270,4 +271,12 @@ func testOsRename(oldpath, newpath string) error {
 		return fmt.Errorf("Unable to rename '%s' to '%s'", oldpath, newpath)
 	}
 	return nil
+}
+
+func testOsModeSymlink(fil os.FileInfo, path string) bool {
+	// fmt.Printf("testOsModeSymlink path='%+v'\n", path)
+	if strings.HasSuffix(path, `prj\symlink\parentnomovesymlinkdir\`) {
+		return false
+	}
+	return fosModeSymlink(fil, path)
 }

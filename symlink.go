@@ -123,6 +123,11 @@ func dirAbsPath(path string) (string, error) {
 var osStat = os.Stat
 var osLstat = os.Lstat
 var osSameFile = os.SameFile
+var osModeSymlink = fosModeSymlink
+
+func fosModeSymlink(fil os.FileInfo, path string) bool {
+	return fil.Mode()&os.ModeSymlink == 0
+}
 
 func dirExists(path string) (bool, string, error) {
 	// fmt.Printf("=================\n")
@@ -137,7 +142,7 @@ func dirExists(path string) (bool, string, error) {
 	}
 	fil, err := osLstat(path)
 	// fmt.Printf("=22= fil='%+v', err='%+v' (path='%+v'), name='%+v', size='%+v', mode='%+v', modTime='%+v', isdir='%+v'\n", fil, err, path, fil.Name(), fil.Size(), fil.Mode(), fil.ModTime(), fil.IsDir())
-	if fil.Mode()&os.ModeSymlink == 0 {
+	if osModeSymlink(fil, path) {
 		// not a symlink
 		return true, "", nil
 	}
