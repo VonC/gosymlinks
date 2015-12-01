@@ -22,9 +22,11 @@ func TestDir(t *testing.T) {
 	for _, tst := range testsDir {
 		path := "tests/" + tst.dirpath
 		dir, err := DirFrom(path)
-		checkBool(t, dir.exist, tst.exist, "Dir.exist ("+tst.dirpath+")")
-		checkBool(t, dir.issymlink, tst.issymlink, "Dir.issymlink ("+tst.dirpath+")")
-		checkString(t, dir.destpath, tst.destpath, "Dir.destpath ("+tst.dirpath+")")
+		if err == nil {
+			checkBool(t, dir.exist, tst.exist, "Dir.exist ("+tst.dirpath+")")
+			checkBool(t, dir.issymlink, tst.issymlink, "Dir.issymlink ("+tst.dirpath+")")
+			checkString(t, dir.destpath, tst.destpath, "Dir.destpath ("+tst.dirpath+")")
+		}
 		checkErrorMsg(t, err, tst.errormsg, tst.dirpath)
 	}
 }
