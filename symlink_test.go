@@ -15,14 +15,29 @@ type testDir struct {
 
 var testsDir = []testDir{
 	// Hollidays() would return 0 if no holidays.txt file
-	testDir{"nonexistentdir", false, false, "", ""},
+	testDir{dirpath: "nonexistentdir"},
 }
 
 func TestDir(t *testing.T) {
 	for _, tst := range testsDir {
 		path := "tests/" + tst.dirpath
-		_, err := DirFrom(path)
+		dir, err := DirFrom(path)
+		checkBool(t, dir.exist, tst.exist, "Dir.exist ("+tst.dirpath+")")
+		checkBool(t, dir.issymlink, tst.issymlink, "Dir.issymlink ("+tst.dirpath+")")
+		checkString(t, dir.destpath, tst.destpath, "Dir.destpath ("+tst.dirpath+")")
 		checkErrorMsg(t, err, tst.errormsg, tst.dirpath)
+	}
+}
+
+func checkBool(t *testing.T, b bool, expected bool, id string) {
+	if b != expected {
+		t.Errorf("%s:\nExpected:\n%s',\nBUT got\n%s'", id, expected, b)
+	}
+}
+
+func checkString(t *testing.T, s string, expected string, id string) {
+	if strings.Contains(s, expected) == false {
+		t.Errorf("%s:\nExpected:\n%s',\nBUT got\n%s'", id, expected, s)
 	}
 }
 
