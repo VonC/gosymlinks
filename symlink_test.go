@@ -64,6 +64,7 @@ func TestDestination(t *testing.T) {
 
 func TestSource(t *testing.T) {
 	osStat = testOsStat
+	osLstat = testOsStat
 	execRun = testExecRun
 	osMkdirAll = testOsMkdirAll
 	osRename = testOsRename
