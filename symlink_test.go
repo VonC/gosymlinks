@@ -13,6 +13,20 @@ type testDir struct {
 	issymlink bool
 	destpath  string
 	errormsg  string
+	force     bool
+}
+
+var errmsg string
+var force bool
+var ftestError = func(err error) string {
+	fmt.Printf("BBBB err %+v, errmsg='%s', force %b\n", err, errmsg, force)
+	if errmsg != "" && force {
+		return errmsg
+	}
+	if err == nil {
+		return ""
+	}
+	return err.Error()
 }
 
 var testsDir = []testDir{
@@ -22,6 +36,7 @@ var testsDir = []testDir{
 	testDir{dirpath: "afile.txt", errormsg: "is not a folder, it is a file"},
 	// Dir cannot reference a file through a junction link
 	testDir{dirpath: "ltofile", errormsg: "is not a folder, it is a file"},
+	testDir{dirpath: "failOnStat", errormsg: "stat fails", force: true},
 }
 
 func initTestDir(t *testing.T) {
@@ -34,7 +49,12 @@ func initTestDir(t *testing.T) {
 
 func TestDir(t *testing.T) {
 	initTestDir(t)
-	for _, tst := range testsDir {
+	for i, tst := range testsDir {
+		if i > 1 {
+			ferror = ftestError
+		}
+		errmsg = tst.errormsg
+		force = tst.force
 		path := "tests/" + tst.dirpath
 		dir, err := DirFrom(path)
 		if err == nil {
@@ -70,7 +90,7 @@ func checkErrorMsg(t *testing.T, err error, errormsg string, id string) {
 			expected := ""
 			for _, errmsg := range errmsgs {
 				errmsg = strings.TrimSpace(errmsg)
-				if strings.Contains(err.Error(), errmsg) == false {
+				if strings.Contains(ferror(err), errmsg) == false {
 					expected = expected + errmsg + "\n"
 				}
 			}

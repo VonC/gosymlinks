@@ -15,12 +15,17 @@ type Dir struct {
 	destpath  string
 }
 
+var ferror = func(err error) string {
+	fmt.Printf("AAAA err %+v\n", err)
+	return err.Error()
+}
+
 func DirFrom(path string) (*Dir, error) {
 	res := &Dir{}
 	fi, err := os.Stat(path)
 	fmt.Printf("%s=> %+v err %+v\n", path, fi, err)
 	if fi == nil {
-		if strings.Contains(err.Error(), "The system cannot find the") {
+		if strings.Contains(ferror(err), "The system cannot find the") {
 			return res, nil
 		}
 		return nil, err
