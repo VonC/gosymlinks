@@ -94,12 +94,15 @@ func TestSource(t *testing.T) {
 		sl, err = New(test.src, ".")
 		if err != nil && strings.Contains(err.Error(), test.err) == false {
 			t.Errorf("Err '%v', expected '%s'", err, test.err)
+			os.Exit(-1)
 		}
 		if err == nil && test.err != "" {
 			t.Errorf("Err nil, expected '%s'", test.err)
+			os.Exit(-2)
 		}
 		if sl == nil && err == nil {
 			t.Errorf("SL '%v', expected NOT <nil>", sl)
+			os.Exit(-3)
 		}
 		fmt.Println("------------------")
 	}
