@@ -109,7 +109,7 @@ func TestSource(t *testing.T) {
 }
 
 func testOsStat(name string) (os.FileInfo, error) {
-	fmt.Printf("testOsStat name='%+v'\n", name)
+	// fmt.Printf("testOsStat name='%+v'\n", name)
 	if strings.HasSuffix(name, `prj\symlink\err\`) {
 		fi, _ := os.Stat(".")
 		return fi, fmt.Errorf("Test error on os.Stat with non-nil fi")
@@ -217,7 +217,7 @@ var junctionOut = `
 
 func testExecRun(cmd *exec.Cmd) error {
 	tmsg := fmt.Sprintf("testExecRun cmd='%v' in '%s'", cmd.Args, cmd.Dir)
-	fmt.Println(tmsg)
+	// fmt.Println(tmsg)
 	if strings.Contains(tmsg, `\failedmklink`) {
 		return fmt.Errorf("mklink fails")
 	}
@@ -267,7 +267,7 @@ func testExecRun(cmd *exec.Cmd) error {
 }
 
 func testOsRename(oldpath, newpath string) error {
-	fmt.Printf("testOsRename oldpath='%v', newpath '%s'\n", oldpath, newpath)
+	// fmt.Printf("testOsRename oldpath='%v', newpath '%s'\n", oldpath, newpath)
 	if strings.HasSuffix(oldpath, `\parentnomovesymlinkdir`) {
 		return fmt.Errorf("Unable to rename '%s' to '%s'", oldpath, newpath)
 	}
