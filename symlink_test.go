@@ -144,7 +144,7 @@ func testOsStat(name string) (os.FileInfo, error) {
 	}
 	if strings.HasSuffix(name, `prj\symlink\parentnomovesymlinkdir\`) {
 		fi, _ := os.Stat(".")
-		return fi, fmt.Errorf("readlink for src parent no move")
+		return fi, nil
 	}
 	if strings.HasSuffix(name, `prj\symlink\badsrcparentdir\`) {
 		return nil, fmt.Errorf("badsrcparentdir cannot be stat'd")
