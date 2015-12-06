@@ -104,7 +104,7 @@ func TestSource(t *testing.T) {
 			t.Errorf("SL '%v', expected NOT <nil>", sl)
 			os.Exit(-3)
 		}
-		fmt.Println("------------------")
+		// fmt.Println("------------------")
 	}
 }
 
@@ -195,7 +195,7 @@ func testOsStat(name string) (os.FileInfo, error) {
 }
 
 func testOsMkdirAll(path string, perm os.FileMode) error {
-	fmt.Printf("testOsMkdirAll path='%+v'\n", path)
+	// fmt.Printf("testOsMkdirAll path='%+v'\n", path)
 	if strings.HasSuffix(path, `badSrcParentMdirAll\`) {
 		return fmt.Errorf("Error on mkDirAll for '%s'", path)
 	}
