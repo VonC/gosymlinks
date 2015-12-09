@@ -58,7 +58,7 @@ func New(link, dst string) (*SL, error) {
 	// fmt.Printf("==== link '%s'\n", link)
 	if hasLink, linkTarget, err = dirExists(link); err != nil {
 		if strings.Contains(err.Error(), "The system cannot find the") == false {
-			return nil, fmt.Errorf("Impossible to check/access link'%s':\n'%+v'", link, err)
+			return nil, fmt.Errorf("Impossible to check/access link '%s':\n'%+v'", link, err)
 		}
 	}
 	// fmt.Printf("=0> linkTarget='%s' vs. dst='%s'\n", linkTarget, dst)
