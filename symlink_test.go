@@ -93,11 +93,11 @@ func TestSource(t *testing.T) {
 	for _, test := range tests {
 		sl, err = New(test.src, ".")
 		if err != nil && strings.Contains(err.Error(), test.err) == false {
-			t.Errorf("Err '%v', expected '%s'", err, test.err)
+			t.Errorf("Err '%v', expected '%s'\nTest src '%s'", err, test.err, test.src)
 			break
 		}
 		if err == nil && test.err != "" {
-			t.Errorf("Err nil, expected '%s'", test.err)
+			t.Errorf("Err nil, expected '%s'\nTest src '%s'", test.err, test.src)
 			break
 		}
 		if sl == nil && err == nil {
