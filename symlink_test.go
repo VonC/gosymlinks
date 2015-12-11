@@ -181,7 +181,7 @@ func testOsStat(name string) (os.FileInfo, error) {
 	}
 	if strings.HasSuffix(name, `prj\symlink\existingparent\existingsymlinkdiffnomove\`) {
 		fi, _ := os.Stat(".")
-		return fi, fmt.Errorf("readlink for existingsymlinkdiffnomove")
+		return fi, nil
 	}
 	if strings.HasSuffix(name, `prj\symlink\parentNoDir\newlinkNoDir\`) {
 		fi, _ := os.Stat(".")
